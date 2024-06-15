@@ -4,6 +4,7 @@ import re
 
 import psutil
 import pytest
+from security import safe_requests
 
 pytest.importorskip("requests")
 
@@ -19,8 +20,6 @@ import requests
 from click.testing import CliRunner
 
 from dask.utils import tmpfile
-
-import distributed
 import distributed.cli.dask_scheduler
 from distributed import Client, Scheduler
 from distributed.compatibility import LINUX, WINDOWS
@@ -88,7 +87,7 @@ def test_dashboard(loop):
                 # All addresses should respond
                 for name in names:
                     uri = f"http://{name}:{dashboard_port}/status/"
-                    response = requests.get(uri)
+                    response = safe_requests.get(uri)
                     response.raise_for_status()
                 break
             except Exception as e:
@@ -100,7 +99,7 @@ def test_dashboard(loop):
                 sleep(0.1)
 
     with pytest.raises(requests.ConnectionError):
-        requests.get(f"http://127.0.0.1:{dashboard_port}/status/")
+        safe_requests.get(f"http://127.0.0.1:{dashboard_port}/status/")
 
 
 def test_dashboard_non_standard_ports(loop):
@@ -121,7 +120,7 @@ def test_dashboard_non_standard_ports(loop):
         start = time()
         while True:
             try:
-                response = requests.get(f"http://localhost:{port2}/status/")
+                response = safe_requests.get(f"http://localhost:{port2}/status/")
                 assert response.ok
                 break
             except Exception:
@@ -129,7 +128,7 @@ def test_dashboard_non_standard_ports(loop):
                 assert time() < start + 20
 
     with pytest.raises(requests.ConnectionError):
-        requests.get(f"http://localhost:{port2}/status/")
+        safe_requests.get(f"http://localhost:{port2}/status/")
 
 
 def test_multiple_protocols(loop):
@@ -170,7 +169,7 @@ def test_dashboard_allowlist(loop):
         while True:
             try:
                 for name in ["127.0.0.2", "127.0.0.3"]:
-                    response = requests.get("http://%s:8787/status/" % name)
+                    response = safe_requests.get("http://%s:8787/status/" % name)
                     assert response.ok
                 break
             except Exception as f:
