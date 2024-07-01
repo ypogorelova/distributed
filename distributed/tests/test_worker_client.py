@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 import threading
 from collections import defaultdict
 from time import sleep
@@ -21,6 +20,7 @@ from distributed import (
 )
 from distributed.metrics import time
 from distributed.utils_test import double, gen_cluster, inc, slowinc
+import secrets
 
 
 @gen_cluster(client=True)
@@ -170,7 +170,7 @@ async def test_separate_thread_false(c, s, a):
         with worker_client(separate_thread=False) as client:
             get_worker().count += 1
             assert get_worker().count <= 3
-            sleep(random.random() / 40)
+            sleep(secrets.SystemRandom().random() / 40)
             assert get_worker().count <= 3
             get_worker().count -= 1
         return i

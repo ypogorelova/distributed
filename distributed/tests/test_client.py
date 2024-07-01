@@ -121,6 +121,7 @@ from distributed.utils_test import (
     wait_for,
     wait_for_state,
 )
+import secrets
 
 pytestmark = pytest.mark.ci1
 
@@ -3709,7 +3710,7 @@ def test_open_close_many_workers(loop, worker, count, repeat):
 
         for _ in range(count):
             loop.add_callback(
-                start_worker, random.random() / 5, random.random() / 5, repeat=repeat
+                start_worker, secrets.SystemRandom().random() / 5, secrets.SystemRandom().random() / 5, repeat=repeat
             )
 
         with Client(s["address"], loop=loop) as c:
@@ -4992,7 +4993,7 @@ def test_threadsafe(c):
     def f(_):
         d = deque(maxlen=50)
         for _ in range(100):
-            future = c.submit(inc, random.randint(0, 100))
+            future = c.submit(inc, secrets.SystemRandom().randint(0, 100))
             d.append(future)
             sleep(0.001)
         c.gather(list(d))
@@ -5015,7 +5016,7 @@ def test_threadsafe_get(c):
     def f(_):
         total = 0
         for _ in range(20):
-            total += (x + random.randint(0, 20)).sum().compute()
+            total += (x + secrets.SystemRandom().randint(0, 20)).sum().compute()
             sleep(0.001)
         return total
 
@@ -5034,7 +5035,7 @@ def test_threadsafe_compute(c):
     def f(_):
         total = 0
         for _ in range(20):
-            future = c.compute((x + random.randint(0, 20)).sum())
+            future = c.compute((x + secrets.SystemRandom().randint(0, 20)).sum())
             total += future.result()
             sleep(0.001)
         return total
@@ -5294,7 +5295,7 @@ def test_serialize_collections_of_futures_sync(c):
 
 def _dynamic_workload(x, delay=0.01):
     if delay == "random":
-        sleep(random.random() / 2)
+        sleep(secrets.SystemRandom().random() / 2)
     else:
         sleep(delay)
     if x > 4:
