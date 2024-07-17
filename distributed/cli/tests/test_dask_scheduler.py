@@ -67,7 +67,7 @@ def test_hostport(loop):
 def test_no_dashboard(loop, requires_default_ports):
     with popen(["dask", "scheduler", "--no-dashboard"]):
         with Client(f"127.0.0.1:{Scheduler.default_port}", loop=loop):
-            response = requests.get("http://127.0.0.1:8787/status/")
+            response = requests.get("http://127.0.0.1:8787/status/", timeout=60)
             assert response.status_code == 404
 
 
@@ -88,7 +88,7 @@ def test_dashboard(loop):
                 # All addresses should respond
                 for name in names:
                     uri = f"http://{name}:{dashboard_port}/status/"
-                    response = requests.get(uri)
+                    response = requests.get(uri, timeout=60)
                     response.raise_for_status()
                 break
             except Exception as e:
@@ -100,7 +100,7 @@ def test_dashboard(loop):
                 sleep(0.1)
 
     with pytest.raises(requests.ConnectionError):
-        requests.get(f"http://127.0.0.1:{dashboard_port}/status/")
+        requests.get(f"http://127.0.0.1:{dashboard_port}/status/", timeout=60)
 
 
 def test_dashboard_non_standard_ports(loop):
@@ -121,7 +121,7 @@ def test_dashboard_non_standard_ports(loop):
         start = time()
         while True:
             try:
-                response = requests.get(f"http://localhost:{port2}/status/")
+                response = requests.get(f"http://localhost:{port2}/status/", timeout=60)
                 assert response.ok
                 break
             except Exception:
@@ -129,7 +129,7 @@ def test_dashboard_non_standard_ports(loop):
                 assert time() < start + 20
 
     with pytest.raises(requests.ConnectionError):
-        requests.get(f"http://localhost:{port2}/status/")
+        requests.get(f"http://localhost:{port2}/status/", timeout=60)
 
 
 def test_multiple_protocols(loop):
@@ -153,7 +153,7 @@ def test_multiple_protocols(loop):
 def test_dashboard_allowlist(loop):
     pytest.importorskip("bokeh")
     with pytest.raises(requests.ConnectionError):
-        requests.get("http://localhost:8787/status/").ok
+        requests.get("http://localhost:8787/status/", timeout=60).ok
 
     port = open_port()
     with popen(
@@ -170,7 +170,7 @@ def test_dashboard_allowlist(loop):
         while True:
             try:
                 for name in ["127.0.0.2", "127.0.0.3"]:
-                    response = requests.get("http://%s:8787/status/" % name)
+                    response = requests.get("http://%s:8787/status/" % name, timeout=60)
                     assert response.ok
                 break
             except Exception as f:
