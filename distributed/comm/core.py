@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import inspect
 import logging
-import random
 import sys
 import weakref
 from abc import ABC, abstractmethod
@@ -18,6 +17,7 @@ from distributed.comm.addressing import parse_address
 from distributed.metrics import time
 from distributed.protocol.compression import get_default_compression
 from distributed.protocol.pickle import HIGHEST_PROTOCOL
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -307,7 +307,7 @@ async def connect(
             # FullJitter see https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
 
             upper_cap = min(time_left(), backoff_base * (2**attempt))
-            backoff = random.uniform(0, upper_cap)
+            backoff = secrets.SystemRandom().uniform(0, upper_cap)
             attempt += 1
             logger.debug(
                 "Could not connect to %s, waiting for %s before retrying", loc, backoff

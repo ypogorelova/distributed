@@ -5,7 +5,6 @@ import gc
 import logging
 import multiprocessing as mp
 import os
-import random
 import sys
 import warnings
 from contextlib import suppress
@@ -15,6 +14,7 @@ import psutil
 import pytest
 
 from distributed.diagnostics.plugin import WorkerPlugin
+import secrets
 
 pytestmark = pytest.mark.gpu
 
@@ -161,7 +161,7 @@ async def test_random_seed(c, s, a, b):
         y = await y
         assert x != y
 
-    await check_func(lambda a, b: random.randint(a, b))
+    await check_func(lambda a, b: secrets.SystemRandom().randint(a, b))
     np = pytest.importorskip("numpy")
     await check_func(lambda a, b: np.random.randint(a, b))
 

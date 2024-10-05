@@ -12,7 +12,6 @@ import math
 import operator
 import os
 import pickle
-import random
 import sys
 import uuid
 import warnings
@@ -115,6 +114,7 @@ from distributed.utils_comm import (
 )
 from distributed.utils_perf import disable_gc_diagnosis, enable_gc_diagnosis
 from distributed.variable import VariableExtension
+import secrets
 
 if TYPE_CHECKING:
     # TODO import from typing (requires Python >=3.10)
@@ -6439,8 +6439,7 @@ class Scheduler(SchedulerState, ServerNode):
                 for ts in tasks:
                     del_candidates = tuple(ts.who_has & workers)
                     if len(del_candidates) > n:
-                        for ws in random.sample(
-                            del_candidates, len(del_candidates) - n
+                        for ws in secrets.SystemRandom().sample(del_candidates, len(del_candidates) - n
                         ):
                             del_worker_tasks[ws].add(ts)
 
@@ -6471,7 +6470,7 @@ class Scheduler(SchedulerState, ServerNode):
                     count = min(n_missing, branching_factor * len(ts.who_has))
                     assert count > 0
 
-                    for ws in random.sample(tuple(workers - ts.who_has), count):
+                    for ws in secrets.SystemRandom().sample(tuple(workers - ts.who_has), count):
                         gathers[ws.address][ts.key] = [
                             wws.address for wws in ts.who_has
                         ]
@@ -7080,7 +7079,7 @@ class Scheduler(SchedulerState, ServerNode):
         # localhost. This could happen across different VMs and/or docker images, so
         # implementing logic based on IP addresses would not necessarily help.
         # Randomize the connections to even out the mean measures.
-        random.shuffle(workers)
+        secrets.SystemRandom().shuffle(workers)
         futures = [
             self.rpc(a).benchmark_network(address=b) for a, b in partition(2, workers)
         ]

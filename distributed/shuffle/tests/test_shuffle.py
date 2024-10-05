@@ -4,7 +4,6 @@ import asyncio
 import io
 import itertools
 import os
-import random
 import shutil
 from collections import defaultdict
 from itertools import count
@@ -12,6 +11,7 @@ from typing import Any, Mapping
 from unittest import mock
 
 import pytest
+import secrets
 
 pd = pytest.importorskip("pandas")
 
@@ -661,7 +661,7 @@ def test_processing_chain():
     )
     df["_partitions"] = df.col4 % npartitions
     schema = pa.Schema.from_pandas(df)
-    worker_for = {i: random.choice(workers) for i in list(range(npartitions))}
+    worker_for = {i: secrets.choice(workers) for i in list(range(npartitions))}
     worker_for = pd.Series(worker_for, name="_worker").astype("category")
 
     data = split_by_worker(df, "_partitions", worker_for=worker_for)
@@ -750,7 +750,7 @@ def test_split_by_worker():
     npartitions = 5
     df = pd.DataFrame({"x": range(100), "y": range(100)})
     df["_partitions"] = df.x % npartitions
-    worker_for = {i: random.choice(workers) for i in range(npartitions)}
+    worker_for = {i: secrets.choice(workers) for i in range(npartitions)}
     s = pd.Series(worker_for, name="_worker").astype("category")
 
 
@@ -1193,11 +1193,11 @@ async def test_basic_lowlevel_shuffle(
                 loop=loop_in_thread,
             )
         )
-    random.seed(42)
+    secrets.SystemRandom().seed(42)
     if barrier_first_worker:
         barrier_worker = shuffles[0]
     else:
-        barrier_worker = random.sample(shuffles, k=1)[0]
+        barrier_worker = secrets.SystemRandom().sample(shuffles, k=1)[0]
 
     try:
         for ix, df in enumerate(dfs):

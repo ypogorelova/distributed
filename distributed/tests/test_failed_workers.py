@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import os
-import random
 from contextlib import suppress
 from time import sleep
 from unittest import mock
@@ -34,6 +33,7 @@ from distributed.utils_test import (
     slowinc,
 )
 from distributed.worker_state_machine import FreeKeysEvent
+import secrets
 
 pytestmark = pytest.mark.ci1
 
@@ -269,11 +269,11 @@ async def test_broken_worker_during_computation(c, s, a, b):
                 key=["add-%d-%d" % (i, j) for j in range(len(L) // 2)],
             )
 
-        await asyncio.sleep(random.random() / 20)
+        await asyncio.sleep(secrets.SystemRandom().random() / 20)
         with suppress(CommClosedError):  # comm will be closed abrupty
             await c.run(os._exit, 1, workers=[n.worker_address])
 
-        await asyncio.sleep(random.random() / 20)
+        await asyncio.sleep(secrets.SystemRandom().random() / 20)
         while len(s.workers) < 3:
             await asyncio.sleep(0.01)
 

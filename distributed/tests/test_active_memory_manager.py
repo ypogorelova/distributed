@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import random
 import warnings
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -32,6 +31,7 @@ from distributed.utils_test import (
     wait_for_state,
 )
 from distributed.worker_state_machine import AcquireReplicasEvent
+import secrets
 
 
 @contextmanager
@@ -1136,7 +1136,7 @@ class DropEverything(ActiveMemoryManagerPolicy):
             # in semi-predictable output about which replica survives, randomly choose a
             # different survivor at each AMM run.
             candidates = list(ts.who_has)
-            random.shuffle(candidates)
+            secrets.SystemRandom().shuffle(candidates)
             for ws in candidates:
                 yield "drop", ts, {ws}
 
@@ -1236,7 +1236,7 @@ async def test_RetireWorker_stress(c, s, *workers, use_ReduceReplicas):
         s.extensions["amm"].policies.clear()
 
     addrs = list(s.workers)
-    random.shuffle(addrs)
+    secrets.SystemRandom().shuffle(addrs)
     print(f"Removing all workers except {addrs[-1]}")
 
     # Note: Scheduler._lock effectively prevents multiple calls to retire_workers from
