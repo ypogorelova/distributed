@@ -49,6 +49,7 @@ from distributed.protocol import pickle
 from distributed.protocol.serialize import Serialize
 from distributed.sizeof import safe_sizeof as sizeof
 from distributed.utils import recursive_to_dict
+import secrets
 
 logger = logging.getLogger("distributed.worker.state_machine")
 
@@ -1332,7 +1333,7 @@ class WorkerState:
         self.transition_counter_max = transition_counter_max
         self.transfer_incoming_bytes_limit = transfer_incoming_bytes_limit
         self.actors = {}
-        self.rng = random.Random(0)
+        self.rng = secrets.SystemRandom().Random(0)
 
     def handle_stimulus(self, *stims: StateMachineEvent) -> Instructions:
         """Process one or more external events, transition relevant tasks to new states,

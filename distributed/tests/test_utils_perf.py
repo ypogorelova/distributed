@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 import gc
 import itertools
-import random
 import re
 
 import pytest
@@ -11,6 +10,7 @@ import pytest
 from distributed.metrics import thread_time
 from distributed.utils_perf import FractionalTimer, GCDiagnosis, disable_gc_diagnosis
 from distributed.utils_test import captured_logger, run_for
+import secrets
 
 
 class RandomTimer:
@@ -23,7 +23,7 @@ class RandomTimer:
         self.timings = []
         self.durations = ([], [])
         self.i_durations = itertools.cycle((0, 1))
-        self.random = random.Random(42)
+        self.random = secrets.SystemRandom().Random(42)
 
     def __call__(self):
         dt = self.random.expovariate(1.0)

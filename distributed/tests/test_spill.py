@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import array
 import os
-import random
 import uuid
 from pathlib import Path
 
@@ -15,6 +14,7 @@ from distributed.compatibility import WINDOWS
 from distributed.spill import SpillBuffer, has_zict_220
 from distributed.utils import RateLimiterFilter
 from distributed.utils_test import captured_logger
+import secrets
 
 requires_zict_220 = pytest.mark.skipif(
     not has_zict_220,
@@ -120,7 +120,7 @@ def test_spillbuffer(tmp_path):
 def test_disk_size_calculation(tmp_path):
     buf = SpillBuffer(str(tmp_path), target=0)
     a = "a" * 100
-    b = array.array("d", (random.random() for _ in range(100)))
+    b = array.array("d", (secrets.SystemRandom().random() for _ in range(100)))
     buf["a"] = a
     buf["b"] = b
     assert_buf(buf, tmp_path, {}, {"a": a, "b": b})

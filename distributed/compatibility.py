@@ -4,6 +4,7 @@ import logging
 import sys
 
 import tornado
+import secrets
 
 logging_names: dict[str | int, int | str] = {}
 logging_names.update(logging._levelToName)  # type: ignore
@@ -66,7 +67,6 @@ else:
     # takes longer than the interval
     import datetime
     import math
-    import random
     from inspect import isawaitable
     from typing import Awaitable, Callable
 
@@ -175,7 +175,7 @@ else:
             callback_time_sec = self.callback_time / 1000.0
             if self.jitter:
                 # apply jitter fraction
-                callback_time_sec *= 1 + (self.jitter * (random.random() - 0.5))
+                callback_time_sec *= 1 + (self.jitter * (secrets.SystemRandom().random() - 0.5))
             if self._next_timeout <= current_time:
                 # The period should be measured from the start of one call
                 # to the start of the next. If one call takes too long,
