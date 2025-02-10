@@ -26,6 +26,7 @@ from distributed.utils_test import (
     requires_ipv6,
     wait_for_log_line,
 )
+from security import safe_command
 
 
 @pytest.mark.parametrize(
@@ -646,8 +647,7 @@ async def test_set_lifetime_restart_via_env_var(c, s):
 @pytest.mark.slow
 @pytest.mark.parametrize("nanny", ["--nanny", "--no-nanny"])
 def test_timeout(nanny):
-    worker = subprocess.run(
-        [
+    worker = safe_command.run(subprocess.run, [
             sys.executable,
             "-m",
             "distributed.cli.dask_worker",
@@ -670,8 +670,7 @@ def test_timeout(nanny):
 @pytest.mark.parametrize("sig", [signal.SIGINT, signal.SIGTERM])
 @gen_cluster(client=True, nthreads=[])
 async def test_signal_handling(c, s, nanny, sig):
-    with subprocess.Popen(
-        [sys.executable, "-m", "distributed.cli.dask_worker", s.address, nanny],
+    with safe_command.run(subprocess.Popen, [sys.executable, "-m", "distributed.cli.dask_worker", s.address, nanny],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     ) as worker:
