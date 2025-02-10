@@ -20,6 +20,7 @@ from distributed.diskutils import WorkSpace
 from distributed.metrics import time
 from distributed.utils import get_mp_context
 from distributed.utils_test import captured_logger
+from security import safe_command
 
 
 def assert_directory_contents(dir_path, expected, trials=2):
@@ -126,8 +127,7 @@ def test_workspace_process_crash(tmp_path):
         base_dir=base_dir
     )
 
-    p = subprocess.Popen(
-        [sys.executable, "-c", code],
+    p = safe_command.run(subprocess.Popen, [sys.executable, "-c", code],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         universal_newlines=True,

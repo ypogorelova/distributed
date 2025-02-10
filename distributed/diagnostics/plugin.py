@@ -14,6 +14,7 @@ from collections.abc import Awaitable
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from dask.utils import funcname, tmpfile
+from security import safe_command
 
 if TYPE_CHECKING:
     from distributed.scheduler import Scheduler, TaskStateState  # circular imports
@@ -479,8 +480,7 @@ class PipInstall(PackageInstall):
         self.pip_options = pip_options or []
 
     def install(self) -> None:
-        proc = subprocess.Popen(
-            [sys.executable, "-m", "pip", "install"] + self.pip_options + self.packages,
+        proc = safe_command.run(subprocess.Popen, [sys.executable, "-m", "pip", "install"] + self.pip_options + self.packages,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
