@@ -39,8 +39,8 @@ logger = logging.getLogger(__name__)
 env = Environment(
     loader=FileSystemLoader(
         os.path.join(os.path.dirname(__file__), "..", "..", "http", "templates")
-    )
-)
+    ), 
+autoescape=True)
 
 BOKEH_THEME = Theme(
     filename=os.path.join(os.path.dirname(__file__), "..", "theme.yaml")
