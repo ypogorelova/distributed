@@ -5,7 +5,6 @@ import contextlib
 import itertools
 import logging
 import math
-import random
 import weakref
 from collections import defaultdict
 from operator import mul
@@ -55,6 +54,7 @@ from distributed.worker_state_machine import (
     FreeKeysEvent,
     StealRequestEvent,
 )
+import secrets
 
 pytestmark = pytest.mark.ci1
 
@@ -555,7 +555,7 @@ async def test_steal_resource_restrictions_asym_diff(c, s, a):
 )
 async def test_balance_without_dependencies(c, s, *workers):
     def slow(x):
-        y = random.random() * 0.1
+        y = secrets.SystemRandom().random() * 0.1
         sleep(y)
         return y
 

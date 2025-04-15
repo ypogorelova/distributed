@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import queue
-import random
 from collections.abc import Iterator
 from operator import add
 from time import sleep
@@ -13,6 +12,7 @@ from distributed.client import _as_completed, _first_completed, as_completed, wa
 from distributed.metrics import time
 from distributed.utils import CancelledError
 from distributed.utils_test import gen_cluster, inc, throws
+import secrets
 
 
 @gen_cluster(client=True)
@@ -58,7 +58,7 @@ def test_as_completed_add(client):
     for future in ac:
         result = future.result()
         total += result
-        if random.random() < 0.5:
+        if secrets.SystemRandom().random() < 0.5:
             future = client.submit(add, future, 10)
             ac.add(future)
             expected += result + 10

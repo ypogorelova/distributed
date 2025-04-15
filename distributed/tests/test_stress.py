@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 from contextlib import suppress
 from operator import add
 from time import sleep
@@ -28,6 +27,7 @@ from distributed.utils_test import (
     slowinc,
     slowsum,
 )
+import secrets
 
 # All tests here are slow in some way
 setup_module = nodebug_setup_module
@@ -71,7 +71,7 @@ async def test_cancel_stress(c, s, *workers):
         f = c.compute(y)
         while (
             len([ts for ts in s.tasks.values() if ts.waiting_on])
-            > (random.random() + 1) * 0.5 * n_todo
+            > (secrets.SystemRandom().random() + 1) * 0.5 * n_todo
         ):
             await asyncio.sleep(0.01)
         await c.cancel(f)
@@ -87,7 +87,7 @@ def test_cancel_stress_sync(loop):
             wait(x)
             for _ in range(5):
                 f = c.compute(y)
-                sleep(random.random())
+                sleep(secrets.SystemRandom().random())
                 c.cancel(f)
 
 
@@ -134,8 +134,8 @@ async def test_stress_scatter_death(c, s, *workers):
 
     adds = [
         delayed(slowadd)(
-            random.choice(L),
-            random.choice(L),
+            secrets.choice(L),
+            secrets.choice(L),
             delay=0.05,
             dask_key_name=f"slowadd-1-{i}",
         )
@@ -151,7 +151,7 @@ async def test_stress_scatter_death(c, s, *workers):
     del L
     del adds
 
-    for w in random.sample(workers, 7):
+    for w in secrets.SystemRandom().sample(workers, 7):
         s.validate_state()
         for w2 in workers:
             w2.validate_state()
@@ -219,8 +219,8 @@ async def test_stress_steal(c, s, *workers):
     while future.status != "finished":
         await asyncio.sleep(0.1)
         for _ in range(3):
-            a = random.choice(workers)
-            b = random.choice(workers)
+            a = secrets.choice(workers)
+            b = secrets.choice(workers)
             if a is not b:
                 s.work_steal(a.address, b.address, 0.5)
         if not any(ws.processing for ws in s.workers.values()):
@@ -245,7 +245,7 @@ async def test_close_connections(c, s, *workers):
     future = c.compute(x.sum())
     while any(ws.processing for ws in s.workers.values()):
         await asyncio.sleep(0.5)
-        worker = random.choice(list(workers))
+        worker = secrets.choice(list(workers))
         for comm in worker._comms:
             comm.abort()
         # print(frequencies(ts.state for ts in s.tasks.values()))

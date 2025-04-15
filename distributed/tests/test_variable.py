@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import pickle
-import random
 from datetime import timedelta
 from time import sleep
 
@@ -13,6 +12,7 @@ from distributed.compatibility import WINDOWS
 from distributed.metrics import monotonic, time
 from distributed.utils import open_port
 from distributed.utils_test import captured_logger, div, gen_cluster, inc, popen
+import secrets
 
 
 @gen_cluster(client=True)
@@ -204,7 +204,7 @@ async def test_race(c, s, *workers):
                 x = future.result()
                 y = c.submit(inc, x)
                 v.set(y)
-                sleep(0.01 * random.random())
+                sleep(0.01 * secrets.SystemRandom().random())
             result = v.get().result()
             sleep(0.1)  # allow fire-and-forget messages to clear
             return result
