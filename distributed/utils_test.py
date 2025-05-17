@@ -83,6 +83,7 @@ from distributed.worker_state_machine import (
 )
 from distributed.worker_state_machine import TaskState as WorkerTaskState
 from distributed.worker_state_machine import WorkerState
+from security import safe_command
 
 try:
     import dask.array  # register config
@@ -1231,7 +1232,7 @@ def popen(
         args[0] = os.path.join(sys.prefix, "Scripts", args[0])
     else:
         args[0] = os.path.join(sys.prefix, "bin", args[0])
-    with subprocess.Popen(args, **kwargs) as proc:
+    with safe_command.run(subprocess.Popen, args, **kwargs) as proc:
         try:
             yield proc
         finally:

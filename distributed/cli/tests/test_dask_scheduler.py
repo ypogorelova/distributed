@@ -4,6 +4,7 @@ import re
 
 import psutil
 import pytest
+from security import safe_command
 
 pytest.importorskip("requests")
 
@@ -571,8 +572,7 @@ def test_multiple_workers(loop):
 @pytest.mark.parametrize("sig", [signal.SIGINT, signal.SIGTERM])
 def test_signal_handling(loop, sig):
     port = open_port()
-    with subprocess.Popen(
-        [
+    with safe_command.run(subprocess.Popen, [
             sys.executable,
             "-m",
             "distributed.cli.dask_scheduler",
