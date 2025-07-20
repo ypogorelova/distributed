@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import ctypes
-import random
 import sys
 from typing import Literal
 
 from dask.utils import parse_timedelta
 
 from distributed.diagnostics.plugin import WorkerPlugin
+import secrets
 
 
 class KillWorker(WorkerPlugin):
@@ -51,7 +51,7 @@ class KillWorker(WorkerPlugin):
             f = self.segfault
 
         self.worker.loop.asyncio_loop.call_later(
-            delay=random.expovariate(1 / self.delay),
+            delay=secrets.SystemRandom().expovariate(1 / self.delay),
             callback=f,
         )
 

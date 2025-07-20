@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 
 import pytest
 from tlz import assoc
@@ -12,6 +11,7 @@ from distributed.metrics import time
 from distributed.protocol import to_serialize
 from distributed.utils import All
 from distributed.utils_test import captured_logger, gen_test
+import secrets
 
 
 class EchoServer:
@@ -168,7 +168,7 @@ async def test_stress():
             for i in range(0, 10000, 2):
                 b.send(i)
                 b.send(i + 1)
-                await asyncio.sleep(0.00001 * random.randint(1, 10))
+                await asyncio.sleep(0.00001 * secrets.SystemRandom().randint(1, 10))
 
         async def recv():
             while True:

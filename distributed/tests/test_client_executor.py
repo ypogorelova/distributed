@@ -1,6 +1,4 @@
 from __future__ import annotations
-
-import random
 from concurrent.futures import (
     FIRST_COMPLETED,
     FIRST_EXCEPTION,
@@ -18,6 +16,7 @@ from distributed.event import Event
 from distributed.metrics import time
 from distributed.utils import CancelledError
 from distributed.utils_test import inc, slowadd, slowinc, throws, varying
+import secrets
 
 
 def number_of_processing_tasks(client):
@@ -177,7 +176,7 @@ def test_map(client):
 
 
 def get_random():
-    return random.random()
+    return secrets.SystemRandom().random()
 
 
 def test_pure(client):

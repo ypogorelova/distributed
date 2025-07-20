@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import random
 from collections import defaultdict
 from collections.abc import Callable, Collection, Coroutine, Mapping
 from functools import partial
@@ -17,6 +16,7 @@ from dask.utils import is_namedtuple_instance, parse_timedelta, stringify
 
 from distributed.core import ConnectionPool, rpc
 from distributed.utils import All
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ async def gather_from_workers(
             if key in results:
                 continue
             try:
-                addr = random.choice(list(addresses - bad_addresses))
+                addr = secrets.choice(list(addresses - bad_addresses))
                 d[addr].append(key)
                 rev[key] = addr
             except IndexError:
@@ -408,7 +408,7 @@ async def retry(
             )
             delay = min(delay_min * (2**i_try - 1), delay_max)
             if jitter_fraction > 0:
-                delay *= 1 + random.random() * jitter_fraction
+                delay *= 1 + secrets.SystemRandom().random() * jitter_fraction
             await asyncio.sleep(delay)
     return await coro()
 

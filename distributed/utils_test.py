@@ -83,6 +83,7 @@ from distributed.worker_state_machine import (
 )
 from distributed.worker_state_machine import TaskState as WorkerTaskState
 from distributed.worker_state_machine import WorkerState
+import secrets
 
 try:
     import dask.array  # register config
@@ -246,9 +247,8 @@ def slowdouble(x, delay=0.02):
 
 
 def randominc(x, scale=1):
-    from random import random
 
-    sleep(random() * scale)
+    sleep(secrets.SystemRandom().random() * scale)
     return x + 1
 
 

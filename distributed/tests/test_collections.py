@@ -3,11 +3,11 @@ from __future__ import annotations
 import heapq
 import operator
 import pickle
-import random
 
 import pytest
 
 from distributed.collections import LRU, HeapSet
+import secrets
 
 
 def test_lru():
@@ -277,9 +277,9 @@ def test_heapset_popright(peek):
 
     # The heap contains broken weakrefs
     for i in range(200):
-        c = C(f"y{i}", random.random())
+        c = C(f"y{i}", secrets.SystemRandom().random())
         heap.add(c)
-        if random.random() > 0.7:
+        if secrets.SystemRandom().random() > 0.7:
             heap.remove(c)
 
     c0 = heap.peek()
@@ -317,9 +317,9 @@ def test_heapset_pickle():
 
     # The heap contains broken weakrefs
     for i in range(200):
-        c = C(f"y{i}", random.random())
+        c = C(f"y{i}", secrets.SystemRandom().random())
         heap.add(c)
-        if random.random() > 0.7:
+        if secrets.SystemRandom().random() > 0.7:
             heap.remove(c)
 
     list(heap.sorted())  # trigger sort

@@ -9,7 +9,6 @@ import logging
 from collections.abc import Callable
 from contextlib import suppress
 from functools import partial
-from random import randint
 from typing import Literal
 
 from packaging.version import parse as parse_version
@@ -18,6 +17,7 @@ from tlz import identity
 import dask
 
 from distributed.utils import ensure_memoryview, nbytes, no_default
+import secrets
 
 compressions: dict[
     str | None | Literal[False],
@@ -136,9 +136,9 @@ def byte_sample(b, size, n):
 
     parts = n * [None]
     max_start = b.nbytes - size
-    start = randint(0, max_start)
+    start = secrets.SystemRandom().randint(0, max_start)
     for i in range(n - 1):
-        next_start = randint(0, max_start)
+        next_start = secrets.SystemRandom().randint(0, max_start)
         end = min(start + size, next_start)
         parts[i] = b[start:end]
         start = next_start

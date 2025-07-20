@@ -9,7 +9,6 @@ import logging
 import math
 import os
 import pathlib
-import random
 import sys
 import tempfile
 import threading
@@ -143,6 +142,7 @@ from distributed.worker_state_machine import (
     UpdateDataEvent,
     WorkerState,
 )
+import secrets
 
 if TYPE_CHECKING:
     # FIXME import from typing (needs Python >=3.10)
@@ -855,7 +855,7 @@ class Worker(BaseWorker, ServerNode):
         self.lifetime_restart = lifetime_restart
 
         if lifetime:
-            lifetime += (random.random() * 2 - 1) * lifetime_stagger
+            lifetime += (secrets.SystemRandom().random() * 2 - 1) * lifetime_stagger
             self.io_loop.call_later(
                 lifetime, self.close_gracefully, reason="worker-lifetime-reached"
             )
@@ -3484,7 +3484,7 @@ def benchmark_disk(
             start = time()
             total = 0
             while time() < start + duration:
-                with open(dir / random.choice(names), mode="ab") as f:
+                with open(dir / secrets.choice(names), mode="ab") as f:
                     f.write(data)
                     f.flush()
                     os.fsync(f.fileno())
