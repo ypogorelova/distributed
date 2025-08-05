@@ -42,5 +42,5 @@ def test_jupyter_cli(loop):
         capture_output=True,
     ):
         with Client(f"127.0.0.1:{port}", loop=loop):
-            response = requests.get("http://127.0.0.1:8787/jupyter/api/status")
+            response = requests.get("http://127.0.0.1:8787/jupyter/api/status", timeout=60)
             assert response.status_code == 200
